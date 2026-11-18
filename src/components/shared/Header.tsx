@@ -1,7 +1,17 @@
 "use client";
 
 import { useSession, signOut } from "@/lib/auth-client";
-import { Car, MessageCircleMore, Sparkles } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Car, LogOut, Sparkles, UserRound } from "lucide-react";
 import Link from "next/link";
 
 const PHONE_DISPLAY = "+880170678-5160";
@@ -9,10 +19,18 @@ const PHONE_HREF = "tel:+8801706785160";
 
 export function Header() {
   const { data: session } = useSession();
-  console.log(session?.user);
   const handelSignOut = async () => {
     await signOut();
   };
+
+  const initials =
+    session?.user.name
+      ?.trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
     <header className="bg-brand-navy text-white">
@@ -57,13 +75,58 @@ export function Header() {
             />
           </button> */}
 
-          <button
-            type="button"
-            aria-label="My account"
-            className="grid  place-items-center rounded-full text-white/80 transition-colors outline-none hover:bg-white/10 hover:text-white focus-visible:ring-3 focus-visible:ring-white/40"
-          >
-            <Link href={"/signin"}>Sign In</Link>
-          </button>
+          {session ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                aria-label="Open account menu"
+                className="rounded-full outline-none focus-visible:ring-3 focus-visible:ring-white/40"
+              >
+                <Avatar size="lg" className="after:border-white/25">
+                  {session.user.image ? (
+                    <AvatarImage
+                      src={session.user.image}
+                      alt={session.user.name ?? "User avatar"}
+                    />
+                  ) : null}
+                  <AvatarFallback className="bg-white/10 text-sm font-semibold text-white">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-56 min-w-56">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="px-2 py-1.5">
+                    <span className="block truncate text-sm font-medium text-foreground">
+                      {session.user.name}
+                    </span>
+                    <span className="block truncate text-xs font-normal text-muted-foreground">
+                      {session.user.email}
+                    </span>
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem render={<Link href="/profile" />}>
+                    <UserRound aria-hidden="true" />
+                    Profile
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem variant="destructive" onClick={handelSignOut}>
+                  <LogOut aria-hidden="true" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <button
+              type="button"
+              aria-label="My account"
+              className="grid  place-items-center rounded-full text-white/80 transition-colors outline-none hover:bg-white/10 hover:text-white focus-visible:ring-3 focus-visible:ring-white/40"
+            >
+              <Link href={"/signin"}>Sign In</Link>
+            </button>
+          )}
         </div>
       </div>
     </header>
