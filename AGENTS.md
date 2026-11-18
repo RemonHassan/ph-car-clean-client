@@ -40,6 +40,7 @@ Single-package Next.js 16 App Router frontend (React 19.3, Tailwind v4, shadcn `
 
 ## Current state
 
-- `src/app/page.tsx` is still a placeholder. Shared `Header` (contact bar) and `Navbar` (primary nav + Book Now CTA) are implemented and rendered from `src/app/layout.tsx`; nav links point at routes that don't exist yet.
+- Route groups split the app: `(root)` wraps public pages with `Header` + `Navbar`, while `(auth)` wraps `/signin` and `/signup` in a full-viewport split-screen shell. The root `src/app/layout.tsx` only renders `<html>`/`<body>`.
+- `src/app/(root)/page.tsx` is still a placeholder. Auth forms are static: `handleSubmit` only prevents the default action and logs the values, ready to be swapped for Better Auth.
 - Brand colors are `--brand-navy` / `--brand-amber` in `globals.css`, exposed as `bg-brand-navy` / `bg-brand-amber`.
 - `src/lib/highlighter.tsx` is a lazily loaded Shiki highlighter; register extra languages/aliases in its `languages`/`aliases` maps. Used by `src/hooks/use-highlighted-code.ts` (nothing consumes either yet).
